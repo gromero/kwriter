@@ -1,5 +1,6 @@
 import jdk.internal.org.objectweb.asm.ByteVector;
 import jdk.internal.org.objectweb.asm.ClassWriter;
+import jdk.internal.org.objectweb.asm.ClassWriterExt;
 import jdk.internal.org.objectweb.asm.MethodVisitor;
 import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.Type;
@@ -16,7 +17,7 @@ class kwriter {
 
     Class<?> myclass;
 
-    try { 
+    try {
       myclass = Class.forName("kwriter");
     } catch (Exception Ex) {
       System.out.println(Ex);
@@ -25,27 +26,42 @@ class kwriter {
 
     String packageName = myclass.getPackage().getName();
     String simpleName  = myclass.getSimpleName();
-  
+
     System.out.println("Class package name: " + packageName);
     System.out.println("Class simple name : " + simpleName);
 
     String className = packageName + simpleName;
 
-    ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+    ClassWriterExt cw = new ClassWriterExt(ClassWriter.COMPUTE_MAXS);
     cw.visit(51,                 /* Class version  */
 //           Opcodes.ACC_PUBLIC, /* Access */
              0, /* Access */
-//           className,          /* Internal class name */           
-             "dummy",            /* Internal class name */           
+//           className,          /* Internal class name */
+             "dummy",            /* Internal class name */
              null,               /* Class signature */
              null,
-             null);   
+             null);
 
-    MethodVisitor mainmv = cw.visitMethod(
-             Opcodes.ACC_STATIC,
-             "main", "([Ljava/lang/String;)V", null, new String[0]); 
+    int i;
 
+    cw.setCacheMTypes(false);
+    for (i = 0; i < 65400; ++i) {
+
+      String methodName = "test" + String.format("%2d", i);
+      MethodVisitor testMV = cw.visitMethod(
+             Opcodes.ACC_PUBLIC,
+             methodName, "()V", null, new String[0]);
+
+      testMV.visitMaxs(-1,-1);
+      testMV.visitEnd();
+    }
+
+   cw.visitEnd();
+
+   write("/tmp/gus/", "dummy.class", cw.toByteArray());
 /*
+
+
     mainmv.visitInsn(Opcodes.DUP);
     mainmv.visitInsn(Opcodes.POP);
     mainmv.visitInsn(Opcodes.DUP);
@@ -53,10 +69,10 @@ class kwriter {
     mainmv.visitInsn(Opcodes.DUP);
     mainmv.visitInsn(Opcodes.POP);
 */
-
+/*
     int CP_CONST_COUNT = 65400;
     int MAX_METHOD_SIZE = 65400;
-    int constCount = 0;
+   int constCount = 0;
 
     System.out.println("BEGIN");
     while (constCount < CP_CONST_COUNT/2) {
