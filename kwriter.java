@@ -119,7 +119,7 @@ class kwriter {
      }
   
      try {
-       System.out.println("Writing " + b.length +  " byte(s) to " + path + filename + "...");
+       System.out.println("Writing " + b.length +  " byte(s) to " + path + filename + " ...");
        os.write(b);
      } catch (Exception E) {
        System.out.println(E);
