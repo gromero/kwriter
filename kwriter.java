@@ -21,7 +21,7 @@ class kwriter {
              null,
              null);
 
-//    cw.setCacheMTypes(false);
+    cw.setCacheMTypes(false);
 
     MethodVisitor mainMV = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC,
                                           "main",
