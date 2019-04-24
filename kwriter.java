@@ -11,6 +11,10 @@ import java.io.IOException;
 
 class kwriter {
 
+  protected static final int CP_CONST_COUNT = 65400;
+  protected static final int MAX_METHOD_SIZE = 65400;
+  protected static final String TEST_METHOD_SIGNATURE = "()V";
+
   public static void main(String[] args) {
     System.out.println("main()[]");
     System.out.println(getDummyInterfaceClassName());
@@ -41,67 +45,74 @@ class kwriter {
              null,               /* Class signature */
              null,
              null);
-
-    int i;
-
     cw.setCacheMTypes(false);
-    for (i = 0; i < 65400; ++i) {
+    int i, j;
 
-      String methodName = "test" + String.format("%2d", i);
+//  System.out.println("BEGIN");
+        // TODO: check real CP size and also limit number of iterations in this cycle
+
+       MethodVisitor mainMV = cw.visitMethod(
+               Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC,
+               "main", "()V",
+               null, null);
+
+        int constCount = 0;
+        int methodNum = 0;
+
+        while (constCount < CP_CONST_COUNT) {
+            final String methodName = "test" + String.format("%d", methodNum);
+
+            MethodVisitor mw = cw.visitMethod(
+                    Opcodes.ACC_PUBLIC,
+                    methodName, TEST_METHOD_SIGNATURE,
+                    null, new String[0]);
+
+            // generateTestMethodProlog(mw);
+
+            // TODO: check real CP size and also limit number of iterations in this cycle
+            while (constCount < CP_CONST_COUNT && cw.getBytecodeLength(mw) < MAX_METHOD_SIZE) {
+                //generateCPEntryData(cw, mw);
+                mw.visitLdcInsn(Type.getMethodType("(FIZ)V"));
+                mw.visitInsn(Opcodes.POP);
+                ++constCount;
+            }
+
+//          generateTestMethodEpilog(mw);
+
+            mw.visitMaxs(-1, -1);
+            mw.visitEnd();
+
+            mainMV.visitInsn(Opcodes.DUP);
+            mainMV.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "", methodName, TEST_METHOD_SIGNATURE);
+
+            ++methodNum;
+        }
+
+//
+/*
+    for (i = 0; i < 4 ; ++i) {
+
+      String methodName = "test" + String.format("%d", i);
       MethodVisitor testMV = cw.visitMethod(
              Opcodes.ACC_PUBLIC,
              methodName, "()V", null, new String[0]);
 
-      testMV.visitMaxs(-1,-1);
+      for (j = 0; j < 512; ++j) {
+        testMV.visitLdcInsn(Type.getMethodType("(FIZ)V"));
+        testMV.visitInsn(Opcodes.POP);
+      }
+
+      testMV.visitInsn(Opcodes.RETURN);
+
+      testMV.visitMaxs(-1, -1);
       testMV.visitEnd();
     }
-
-   cw.visitEnd();
-
-   write("/tmp/gus/", "dummy.class", cw.toByteArray());
-/*
-
-
-    mainmv.visitInsn(Opcodes.DUP);
-    mainmv.visitInsn(Opcodes.POP);
-    mainmv.visitInsn(Opcodes.DUP);
-    mainmv.visitInsn(Opcodes.POP);
-    mainmv.visitInsn(Opcodes.DUP);
-    mainmv.visitInsn(Opcodes.POP);
 */
-/*
-    int CP_CONST_COUNT = 65400;
-    int MAX_METHOD_SIZE = 65400;
-   int constCount = 0;
-
-    System.out.println("BEGIN");
-    while (constCount < CP_CONST_COUNT/2) {
-      mainmv.visitLdcInsn(Type.getMethodType("(FIZ)V"));
-//      mainmv.visitInsn(Opcodes.POP);
-      ++constCount;
-    }
-    System.out.println("END");
-
-    mainmv.visitInsn(Opcodes.RETURN);
-    mainmv.visitMaxs(-1, -1);
-    mainmv.visitEnd();
+//  System.out.println("END");
 
     cw.visitEnd();
-
-    write("/tmp/gus/", "dummy.class", cw.toByteArray());
-    
-//
-//   String h = "Hello";
-//   write("/tmp/gus/","mock01.txt", h.getBytes());
-/*
-    public static class Klass {
-      private String pkgName;
-      private String className;
-      private byte[] bytes;
-      private String mainMethodName;
-      private String mainMethodSignature;
-*/
-
+ 
+    write("/tmp/gus/", "x.class", cw.toByteArray());
   }
 
   static void write(String path, String filename, byte[] b) {
@@ -110,7 +121,7 @@ class kwriter {
 
      File file = new File(dir, filename);
      FileOutputStream os;
- 
+
      try {
        os = new FileOutputStream(file);
      } catch (Exception E) {
