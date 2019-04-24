@@ -21,7 +21,7 @@ class kwriter {
              null,
              null);
 
-    cw.setCacheMTypes(false);
+//    cw.setCacheMTypes(false);
 
     MethodVisitor mainMV = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC,
                                           "main",
@@ -60,7 +60,7 @@ class kwriter {
 
     cw.visitEnd();
 
-    write("/tmp/gus/", "x.class", cw.toByteArray());
+    write("./", "bogus.class", cw.toByteArray());
   }
 
   static void write(String path, String filename, byte[] b) {
