@@ -67,24 +67,27 @@ class kwriter {
                     methodName, TEST_METHOD_SIGNATURE,
                     null, new String[0]);
 
+            System.out.println("Creating method " +  methodName + " ..."); 
+
             // generateTestMethodProlog(mw);
 
             // TODO: check real CP size and also limit number of iterations in this cycle
             while (constCount < CP_CONST_COUNT && cw.getBytecodeLength(mw) < MAX_METHOD_SIZE) {
                 //generateCPEntryData(cw, mw);
                 mw.visitLdcInsn(Type.getMethodType("(FIZ)V"));
-                mw.visitInsn(Opcodes.POP);
+//           mw.visitInsn(Opcodes.POP);
+		System.out.print(constCount + "\r");
                 ++constCount;
             }
 
+            System.out.println("\n");
 //          generateTestMethodEpilog(mw);
 
             mw.visitMaxs(-1, -1);
             mw.visitEnd();
 
-            mainMV.visitInsn(Opcodes.DUP);
-            mainMV.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "", methodName, TEST_METHOD_SIGNATURE);
-
+//            mainMV.visitInsn(Opcodes.DUP);
+//            mainMV.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "", methodName, TEST_METHOD_SIGNATURE);
             ++methodNum;
         }
 
