@@ -11,83 +11,25 @@ import java.io.IOException;
 
 class kwriter {
   public static void main(String[] args) {
-
     ClassWriterExt cw = new ClassWriterExt(ClassWriter.COMPUTE_MAXS);
 
-    cw.visit(51,                 /* Class version  */
-             0,                  /* Access */
-             "dummy",            /* Internal class name */
-             null,               /* Class signature */
-             null,
-             null);
+    cw.visit(51, 0, "dummy", null, null, null);
 
     cw.setCacheMTypes(false);
 
-    MethodVisitor mainMV = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC,
-                                          "main",
-                                          "()V",
-                                          null,
-                                          null);
+    MethodVisitor mainMV = cw.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "main", "()V", null, null);
 
-    int constCount = 0;
-    int methodNum = 0;
-    int K = 40000;
     Type t;
+ 
+    MethodVisitor test00MV = cw.visitMethod( Opcodes.ACC_PUBLIC, "test00", "()V", null, null);
+ 
+    for (int i = 0; i < 40000; ++i) {
+      System.out.print(i + "\r");
+      t = Type.getMethodType("()V");
+//    t = Type.getType("I"); // OK!
+      test00MV.visitLdcInsn(t);
+    }
 
-//    while (constCount < K) {
-      String methodName = "test00"; // + methodNum;
- 
-      MethodVisitor mw = cw.visitMethod(
-              Opcodes.ACC_PUBLIC,
-              methodName, "()V", 
-              null, new String[0]);
- 
-      System.out.println("Creating method " +  methodName + " ..."); 
- 
-
- 
-      while (constCount < K  /* && cw.getBytecodeLength(mw) < K */) {
-  	  System.out.print(constCount + "\r");
-//        mw.visitLdcInsn(Type.getMethodType("(FIZ)V"));
-       t = Type.getMethodType("()V");
-//          t = Type.getType("I");
-	 // System.out.println(t.getSort());
-          mw.visitLdcInsn(t);
-          ++constCount;
-      }
- 
-      System.out.println("");
- 
-//      mw.visitMaxs(-1, -1);
-//      mw.visitEnd();
- 
-//      ++methodNum;
-//    }
-
-//    cw.visitEnd();
-
-  //  write("./", "bogus.class", cw.toByteArray());
+    System.out.println("");
   }
-
-  static void write(String path, String filename, byte[] b) {
-     File dir  = new File(path);
-     dir.mkdirs();
-
-     File file = new File(dir, filename);
-     FileOutputStream os;
-
-     try {
-       os = new FileOutputStream(file);
-     } catch (Exception E) {
-       System.out.println(E);
-       os = null;
-     }
-  
-     try {
-       System.out.println("Writing " + b.length +  " byte(s) to " + path + filename + " ...");
-       os.write(b);
-     } catch (Exception E) {
-       System.out.println(E);
-     }  
-   }
 }
