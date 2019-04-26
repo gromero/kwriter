@@ -23,7 +23,7 @@ class kwriter {
  
     MethodVisitor test00MV = cw.visitMethod( Opcodes.ACC_PUBLIC, "test00", "()V", null, null);
  
-    for (int i = 0; i < 40000; ++i) {
+    for (int i = 0; i < 32000; ++i) {
       System.out.print(i + "\r");
       t = Type.getMethodType("()V");
 //    t = Type.getType("I"); // OK!
