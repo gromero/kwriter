@@ -31,7 +31,7 @@ class kwriter {
 
     int constCount = 0;
     int methodNum = 0;
-    int K = 64500;
+    int K = 21501;
 
     while (constCount < K) {
       String methodName = "test" + methodNum;
@@ -44,7 +44,7 @@ class kwriter {
       System.out.println("Creating method " +  methodName + " ..."); 
  
  
-      while (constCount < K && cw.getBytecodeLength(mw) < K) {
+      while (constCount < K  /* && cw.getBytecodeLength(mw) < K */) {
   	  System.out.print(constCount + "\r");
           mw.visitLdcInsn(Type.getMethodType("(FIZ)V"));
           ++constCount;
