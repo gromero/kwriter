@@ -31,10 +31,11 @@ class kwriter {
 
     int constCount = 0;
     int methodNum = 0;
-    int K = 21501;
+    int K = 40000;
+    Type t;
 
-    while (constCount < K) {
-      String methodName = "test" + methodNum;
+//    while (constCount < K) {
+      String methodName = "test00"; // + methodNum;
  
       MethodVisitor mw = cw.visitMethod(
               Opcodes.ACC_PUBLIC,
@@ -43,24 +44,29 @@ class kwriter {
  
       System.out.println("Creating method " +  methodName + " ..."); 
  
+
  
       while (constCount < K  /* && cw.getBytecodeLength(mw) < K */) {
   	  System.out.print(constCount + "\r");
-          mw.visitLdcInsn(Type.getMethodType("(FIZ)V"));
+//        mw.visitLdcInsn(Type.getMethodType("(FIZ)V"));
+       t = Type.getMethodType("()V");
+//          t = Type.getType("I");
+	 // System.out.println(t.getSort());
+          mw.visitLdcInsn(t);
           ++constCount;
       }
  
       System.out.println("");
  
-      mw.visitMaxs(-1, -1);
-      mw.visitEnd();
+//      mw.visitMaxs(-1, -1);
+//      mw.visitEnd();
  
-      ++methodNum;
-    }
+//      ++methodNum;
+//    }
 
-    cw.visitEnd();
+//    cw.visitEnd();
 
-    write("./", "bogus.class", cw.toByteArray());
+  //  write("./", "bogus.class", cw.toByteArray());
   }
 
   static void write(String path, String filename, byte[] b) {
